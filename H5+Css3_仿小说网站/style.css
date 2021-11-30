@@ -1,0 +1,102 @@
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: start;
+            align-items: start;
+            position: relative;
+        }
+        /* html {
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .box {
+            margin-right: calc(100% - 100vw);
+        } */
+        .box {
+            width: 100%;
+        }
+        .head {
+            /* width: 1644px; */
+            background-color: chocolate;
+            display: flex;
+            justify-content: space-between;
+            /* position: relative; */
+        }
+
+        .head-left {
+            display: flex;
+        }
+        .head > span {
+            display: inline-block;
+            text-align: center;
+            margin-top: 5px;
+        }
+        a {
+            display: inline-block;
+            text-align: center;
+            margin-top: 5px;
+        }
+        /* .head-a {
+            margin-right: 775px;
+        } */
+        [class^="head_box"] {
+            height: 20px;
+            width:20px;
+            margin: 4px;
+            border: 1px solid #fff;
+            border-radius: 10%;
+        }
+        button {
+            margin: 4px;
+            border: 0;
+            border-radius: 5%;
+            background: linear-gradient(#fff,#99ccff);
+        }
+        .sprict-line {
+            height: 4px;
+            background: #0000ff;
+        }
+        @media only screen and (max-width: 320px) {
+            html {
+                font-size: 3.5px
+            }
+            body {
+                margin-right: calc(100% - 100vw);
+            }
+        }@media only screen and (max-width:640px) {
+            html {
+                font-size: 4.8px}
+        }
+        @media only screen and (max-width: 641px) {
+            html {
+                font-size: 6.4px}
+        }
+        .center {
+            width: 100%;
+        }
+        .box_center {
+            position: absolute;
+            top: 10%; 
+            left: 45%;
+            transform: (-50%,-50%);
+        }
+        .box_button—center {
+            position: relative;
+            left: 50%;
+            /* transform: (-50%,-50%); */
+        }
+        .title_center {
+            top: 20%; 
+            left: 10%;
+            right: 10%;
+            position: absolute;
+            transform: (-50%,-50%);
+        }
+        .title_center > span{
+            display: inline-block;
+            margin-top: 15px;
+            text-indent: 3em;   /*缩进度*/
+            font-family: '宋体';
+        }
