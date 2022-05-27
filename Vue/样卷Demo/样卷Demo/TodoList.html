@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TodoList</title>
+    <script src="js/vue.js"></script>
+    <style>
+        li {
+            padding: 5px 0;
+        }
+
+        .finish {
+            text-decoration: line-through;
+        }
+
+        #filter {
+            padding-top: 10px;
+        }
+
+        #filter span {
+            display: inline-block;
+            width: 100px;
+            height: 32px;
+            line-height: 32px;
+            background-color: #eee;
+            text-align: center;
+            cursor: pointer;
+
+        }
+
+        #filter span.active {
+            color: white;
+            background-color: rgb(2, 167, 222);
+
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div>
+            <h1>任务计划列表</h1>
+        </div>
+        <div>
+            <h3>添加任务</h3>
+            <input type="text" value="" style="width:400px;" v-model.trim="newTask" placeholder="按回车添加任务"
+                @keyup.enter="fnKeyUp">
+        </div>
+        <div id="filter">
+            <!-- 静态写法 -->
+            <!-- <span :class="selectedIndex==0?'active':''" @click="fnSelect(0)">全部</span>
+            <span :class="selectedIndex==1?'active':''" @click="fnSelect(1)">未完成</span>
+            <span :class="selectedIndex==2?'active':''" @click="fnSelect(2)">已完成</span>
+            -->
+            <!-- 动态写法 -->
+            <span v-for="(item,index) in filterTexts" :class="selectedIndex==index?'active':''" :key="index"
+                @click="fnSelect(index)">
+                {{item}}
+            </span>
+
+            <label>记录数：{{filterTasks.length}}</label>
+        </div>
+        <div>
+            <h3>任务列表</h3>
+            <ul>
+                <li v-for="task,index in filterTasks">
+                    <input type="checkbox" v-model="task.isFinish">
+                    <!-- 方式一：标签 -->
+                    <s v-if="task.isFinish">{{task.name}}</s>
+                    <span v-else>{{task.name}}</span>
+                    <!-- 方式二：样式 -->
+                    <span :class="task.isFinish?'finish':''">{{task.name}}</span>
+                    <button @click="fnDelete(task.id)">删除</button>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <script>
+        let app = new Vue({
+            el: '#app',
+            data: {
+                newTask: '',
+                filterTexts: ['全部', '未完成', '已完成'],
+                selectedIndex: 0,
+                Tasks: []
+            },
+            methods: {
+                fnKeyUp() {
+                    // if (this.newTask == "") {
+                    //     return
+                    // }
+                    // 简化写法
+                    // 注意：这里结合了.trim修饰符
+                    if (!this.newTask) {
+                        return
+                    }
+                    // 重点：思路转变，用一个对象来表示一个任务
+                    let task = {
+                        // 时间戳
+                        id: new Date().getTime(),
+                        // 任务信息
+                        name: this.newTask,
+                        // 任务是否完成
+                        isFinish: false
+                    }
+                    // 注意：用vue提供的数组处理方法
+                    this.Tasks.push(task)
+                    this.newTask = ''
+                },
+                // 切换选项卡
+                fnSelect(index) {
+                    this.selectedIndex = index
+                },
+                // 删除任务
+                fnDelete(id) {
+                    
+                    // 方式三：
+                    for (let i = 0; i < this.Tasks.length; i++) {
+                        let task = this.Tasks[i]
+                        if (task.id == id) {
+                            this.Tasks.splice(i, 1)
+                        }
+                    }
+
+                }
+            },
+            computed: {
+                // 计算属性
+                filterTasks() {
+                    // 全部
+                    if (this.selectedIndex == 0) {
+                        return this.Tasks
+                    }
+                    // 未完成
+                    if (this.selectedIndex == 1) {
+                        // 放最终结果的数组
+                        let result = []
+                        for (let i = 0; i < this.Tasks.length; i++) {
+                            let task = this.Tasks[i]
+                            if (task.isFinish == false) {
+                                result.push(task)
+                            }
+                        }
+                        return result
+                    }
+                    // 已完成
+                    if (this.selectedIndex == 2) {
+                        let result = []
+                        for (let i = 0; i < this.Tasks.length; i++) {
+                            let task = this.Tasks[i]
+                            if (task.isFinish) {
+                                result.push(task)
+                            }
+                        }
+                        return result
+                    }
+                }
+            }
+
+
+        })
+    </script>
+</body>
+
+</html>

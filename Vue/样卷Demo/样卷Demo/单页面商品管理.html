@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单页面的商品管理</title>
+    <script src="js/vue.js"></script>
+    <style>
+        #table-wrap {
+            width: 800px;
+            margin: 0 auto;
+        }
+
+        #table-wrap table {
+            width: 100%;
+        }
+
+        #table-wrap table td {
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        #opr-wrap input[type=text] {
+            width: 400px;
+        }
+
+        #add-wrap {
+            position: fixed;
+            left: 50%;
+            top: 30%;
+            width: 600px;
+            margin-left: -300px;
+            border: 1px solid #ccc;
+            background-color: white;
+        }
+
+        #add-wrap #title-wrap {
+            height: 32px;
+            line-height: 32px;
+            padding-left: 30px;
+            padding-right: 10px;
+            border-bottom: 1px solid #ccc;
+            font-weight: bold;
+        }
+
+        #add-wrap #title-wrap button {
+            float: right;
+            margin-top: 5px;
+        }
+
+        #add-wrap table {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+
+        <div id="table-wrap">
+            <div id="opr-wrap">
+                <button @click="add">添加</button>
+                <!-- 按键修饰符 -->
+                关键字:<input type="text" v-model="keyword" @keyup.enter="search" />
+            </div>
+            <table>
+                <!-- 表头 -->
+                <tr>
+                    <td>序号</td>
+                    <td>商品名称</td>
+                    <td>分类</td>
+                    <td>价格</td>
+                    <td>简介</td>
+                    <td>操作</td>
+                </tr>
+                <!-- 数据行-->
+                <tr v-for="(item,index) in searchResultList2">
+                    <td>{{index+1}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.category}}</td>
+                    <td>{{item.price}}</td>
+                    <td>{{item.intro}}</td>
+                    <td>
+                        <button @click="edit(item)">编辑</button>
+                        <button @click="del(item.id)">删除</button>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+        <!-- 添加窗口 -->
+        <div id="add-wrap" v-show="isShow">
+            <div id="title-wrap">
+                <span>{{title}}</span>
+                <button @click="isShow=false">X</button>
+            </div>
+            <table>
+                <tr>
+                    <td align="right">名称</td>
+                    <td><input type="text" v-model="editForm.name"></td>
+                </tr>
+                <tr>
+                    <td align="right">分类</td>
+                    <td><input type="text" v-model="editForm.category"></td>
+                </tr>
+                <tr>
+                    <td align="right">价格</td>
+                    <td><input type="number" v-model.number="editForm.price"></td>
+                </tr>
+                <tr>
+                    <td align="right">简介</td>
+                    <td>
+                        <textarea rows="10" cols="40" v-model="editForm.intro"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <button @click="save">保存</button>
+                        <input type="reset" value="重置">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                title: '添加商品',
+                isSearch: false,
+                isShow: false,
+                keyword: '',
+                editForm: {
+                    id:'',
+                    name: '',
+                    category: '',
+                    price: 0,
+                    intro: ''
+                },
+                // list 存放所有商品的数据
+                list: [{
+                    id: 1499393993,
+                    name: '商品AAAA',
+                    category: '分类一',
+                    price: 10.88,
+                    intro: '简介。。。。'
+                }, {
+                    id: 1499393994,
+                    name: '商品BBBB',
+                    category: '分类一',
+                    price: 10.88,
+                    intro: '简介。。。。'
+                }],
+                searchResultList: []
+            },
+            methods: {
+                // 添加
+                add() {
+                    this.isShow = true
+                    this.title = '添加商品'
+                    this.editForm.name = ''
+                    this.editForm.price = 0
+                    this.editForm.category = ''
+                    this.editForm.intro = ''
+                },
+                // 保存
+                save() {
+                    if (this.editForm.name.length <= 0) {
+                        alert('请输入名称')
+                        return
+                    }
+                    if (this.editForm.category.length <= 0) {
+                        alert('请输入分类')
+                        return
+                    }
+                    if (this.editForm.price <= 0) {
+                        alert('价格不能小于等于0')
+                        return
+                    }
+
+                    if (this.title == '添加商品') {
+                        // 添加
+                        this.list.push({
+                            // 当前时间的时间戳作为id
+                            // 单机，id不会重复
+                            id: (new Date()).getTime(),
+                            name: this.editForm.name,
+                            category: this.editForm.category,
+                            price: this.editForm.price,
+                            intro: this.editForm.intro
+                        })
+                    }else{
+                        // 编辑
+                        // 遍历list，找到对应的商品
+                        for(let i=0;i<this.list.length;i++){
+                            if(this.list[i].id==this.editForm.id){
+                                this.list[i].name = this.editForm.name
+                                this.list[i].category = this.editForm.category
+                                this.list[i].price = this.editForm.price
+                                this.list[i].intro = this.editForm.intro
+                            }
+                        }
+                    }
+                    this.isShow = false
+                },
+                // 删除商品
+                del(id) {
+                    for (let i = 0; i < this.list.length; i++) {
+                        if (this.list[i].id == id) {
+                            this.list.splice(i, 1)
+                            return
+                        }
+                    }
+                    
+                },
+                // 编辑
+                edit(item) {
+                    this.isShow = true
+                    this.title = '编辑商品'
+                    this.editForm.id = item.id
+                    this.editForm.name = item.name
+                    this.editForm.price = item.price
+                    this.editForm.category = item.category
+                    this.editForm.intro = item.intro
+                }
+            },
+            computed:{
+                // 计算属性
+                searchResultList2(){
+                    let result = []// 用于放筛选后的数据
+                    for(let i=0;i<this.list.length;i++){
+                        if(this.list[i].name.indexOf(this.keyword)>-1){
+                            result.push(this.list[i])
+                        }
+                    }
+                    return result
+                }
+            }
+
+
+
+        })
+    </script>
+</body>
+
+</html>
